@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'org.springframework.boot' version '3.1.9'
     id 'io.spring.dependency-management' version '1.1.4'
 }
@@ -26,6 +27,11 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    api 'com.mysql:mysql-connector-j'
+
+    //api라는 키워드를 사용하기 위해선 맨 위 plugins에 'java-library'라는 키워드가 추가되어야 한다.
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
 }
 
 tasks.named('bootBuildImage') {
@@ -35,3 +41,22 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+/**
+ * bootJar를 true로 설정하면 `**.jar` 파일이 생성됨
+ * 그 파일 안에 어플리케이션을 실행하는 데 필요한 Dependency, class, resource 등을 포함하고 있기 때문에
+ * jar 파일을 실행 시킬 수 있게 된다.
+ * 하지만 Common 모듈은 다른 모듈에서 참조하는 목적의 모듈이기 때문에 실행 가능한 jar파일을 만들 필요가 없음
+ * 그러므로 Common 모듈에서는 bootjar 옵션 값을 false로 설정해주면 됨.
+ * 만약 bootjar를 true로 설정하면 main 클래스를 찾게 되는데 Common 모듈에서는 api 모듈처럼 메인 클래스가 없다.
+ * 그렇기 때문에 만약 true로 주고 gradle 빌드를 시도하게 되면 에러가 발생하게 됨
+ */
+tasks.bootJar { enabled = false }
+
+/**
+ * jar를 true로 설정하면 ***-plain.jar로 파일이 생성됨.
+ * `***.jar`와 `***-plain.jar`의 차이는 -plain이 붙은 것은 dependency를 갖고 있지 않음.
+ * 클래스와 리소스만 포함하고 있어서 서버를 실행 시킬 수 없게 된다.
+ * Common 모듈은 -plain 파일은 필요하지만 서버를 구동시킬 .jar 파일은 필요 없기 때문에 true 옵션을 줌
+ */
+tasks.jar { enabled = true }
