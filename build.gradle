@@ -60,3 +60,7 @@ tasks.bootJar { enabled = false }
  * Common 모듈은 -plain 파일은 필요하지만 서버를 구동시킬 .jar 파일은 필요 없기 때문에 true 옵션을 줌
  */
 tasks.jar { enabled = true }
+
+test {
+    exclude '**/*Tests.class'
+}
